@@ -84,18 +84,35 @@ jobs:
         # `latest` to always move forward to the newest release so a
         # bare `npm install` does not silently install a stale build.
         #
+        # Auth note: Trusted Publisher OIDC is scoped to `npm publish`
+        # only - the token is request-scoped and does not authenticate
+        # subsequent `npm dist-tag` calls. We use a long-lived granular
+        # automation token from the `NPM_TOKEN` secret here. If the
+        # secret is not configured the step warns and exits cleanly so
+        # the workflow as a whole stays green; the operator can then
+        # advance `latest` manually with `npm dist-tag add`.
+        #
         # Skipped when the publish above already set `latest` (i.e.
-        # the dispatch input was `tag: latest`). The npm registry calls
-        # below are idempotent, but the `if` keeps the workflow log
-        # honest about what happened.
+        # the dispatch input was `tag: latest`).
         #
         # Policy revisit at 1.0: once a stable line exists, `latest`
         # should pin to the newest stable, not alphas. Remove this step
         # then (or gate it on `inputs.tag == 'latest'` only).
         if: inputs.tag != 'latest'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          if [ -z "${NPM_TOKEN:-}" ]; then
+            echo "::warning::NPM_TOKEN secret is not configured; skipping latest dist-tag advance."
+            echo "::warning::To enable automatic advance: mint a granular automation token at"
+            echo "::warning::https://www.npmjs.com/settings/<user>/tokens with read+write on the @blockchain0x scope,"
+            echo "::warning::then add it as the NPM_TOKEN repo secret."
+            exit 0
+          fi
           PKG_NAME=$(node -p "require('./package.json').name")
           PKG_VER=$(node -p "require('./package.json').version")
           echo "Advancing ${PKG_NAME} latest -> ${PKG_VER}"
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > "$HOME/.npmrc"
           npm dist-tag add "${PKG_NAME}@${PKG_VER}" latest
           npm view "${PKG_NAME}" dist-tags
+          rm -f "$HOME/.npmrc"
