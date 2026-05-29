@@ -1,5 +1,9 @@
 # @blockchain0x/x402 changelog
 
+## [0.1.0-alpha.3] - 2026-05-29
+
+minor
+
 ## [0.1.0-alpha.2] - 2026-05-29
 
 minor
@@ -21,5 +25,6 @@ Adds:
 
 Peer dependency: `@blockchain0x/node@^0.2.0`.
 
+[0.1.0-alpha.3]: https://github.com/Tosh-Labs/blockchain0x-x402/releases/tag/v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/Tosh-Labs/blockchain0x-x402/releases/tag/v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/Tosh-Labs/blockchain0x-x402/releases/tag/v0.1.0-alpha.1
