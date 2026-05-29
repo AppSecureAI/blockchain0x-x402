@@ -1,0 +1,85 @@
+{
+  "name": "@blockchain0x/x402",
+  "version": "0.1.0-alpha.0",
+  "description": "x402 protocol client + server adapters for Blockchain0x. Drop-in fetch wrapper for pay-side, Fastify/Express plugins for receive-side. See https://blockchain0x.com/docs/x402.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./server/fastify": {
+      "types": "./dist/server/fastify.d.ts",
+      "import": "./dist/server/fastify.js"
+    },
+    "./server/express": {
+      "types": "./dist/server/express.d.ts",
+      "import": "./dist/server/express.js"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "blockchain0x",
+    "x402",
+    "http-402",
+    "payment-required",
+    "base",
+    "usdc",
+    "ai-agent",
+    "agent-payments",
+    "fastify",
+    "express"
+  ],
+  "homepage": "https://github.com/Tosh-Labs/blockchain0x-x402#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tosh-Labs/blockchain0x-x402.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tosh-Labs/blockchain0x-x402/issues"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+  },
+  "peerDependencies": {
+    "@blockchain0x/node": "^0.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@blockchain0x/node": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@blockchain0x/node": "^0.2.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "express": "^4.19.2",
+    "fastify": "4.28.1",
+    "typescript": "5.6.2",
+    "vitest": "^4.1.6"
+  }
+}

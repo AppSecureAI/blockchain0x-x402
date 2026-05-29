@@ -1,0 +1,77 @@
+# Publish @blockchain0x/x402 to npm with full Sigstore provenance
+# attestation. Manual dispatch only.
+#
+# Requires npm Trusted Publisher binding on
+# https://www.npmjs.com/package/@blockchain0x/x402/access:
+#   Publisher type:    GitHub Actions
+#   Repository owner:  Tosh-Labs
+#   Repository name:   blockchain0x-x402
+#   Workflow filename: publish.yml
+#   Environment:       (blank)
+#
+# This file is mirrored from the private monorepo
+# `Tosh-Labs/blockchain0x-app:packages/x402/.public-templates/.github/workflows/publish.yml`
+# by the `mirror-x402` workflow there. Do not edit it directly in the
+# public repo - changes will be overwritten on the next mirror.
+
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'npm dist-tag'
+        required: true
+        default: 'alpha'
+        type: choice
+        options:
+          - alpha
+          - beta
+          - latest
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # Do NOT set registry-url - it writes ~/.npmrc with an empty
+          # authToken that shortcuts OIDC. Default registry is npmjs.org
+          # so this is a no-op for routing.
+
+      - name: upgrade npm CLI for OIDC support (needs >=11.5.1)
+        run: npm install -g npm@latest
+
+      - name: install deps
+        # The mirrored package.json carries `@blockchain0x/node` as a
+        # regular devDependency (the workspace:* form is rewritten to
+        # the pinned alpha version by the mirror workflow). A plain
+        # `npm install` pulls it from npmjs.org.
+        run: npm install --no-package-lock
+
+      - name: build
+        run: npm run build
+
+      - name: test (wire-format unit tests must pass before publish)
+        # Last-chance defense before the package goes to npm. The
+        # source has already passed monorepo-side tests via the mirror
+        # workflow; this second gate catches any drift introduced
+        # during the snapshot transformation (tsconfig inlining,
+        # package.json mutations, etc.).
+        run: npm test
+
+      - name: publish (OIDC + provenance + selected tag)
+        env:
+          DIST_TAG: ${{ inputs.tag }}
+        run: |
+          rm -f "$HOME/.npmrc"
+          npm --version
+          npm publish --provenance --access public --tag "$DIST_TAG"
