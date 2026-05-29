@@ -9,11 +9,13 @@ Status: alpha. Wire format follows the Coinbase x402 reference (`X-Payment: <sch
 
 ## Install
 
+Both packages are currently in alpha; install the `@alpha` tag explicitly so npm picks the matching pre-release pair:
+
 ```sh
-npm install @blockchain0x/x402 @blockchain0x/node
+npm install @blockchain0x/x402@alpha @blockchain0x/node@alpha
 ```
 
-`@blockchain0x/node` is a hard peer dependency: the client wrapper calls `sdk.payments.create` + `sdk.transactions.get`, and the server adapters call `sdk.paymentRequests.settle`.
+`@blockchain0x/node` is a hard peer dependency: the client wrapper calls `sdk.payments.create` + `sdk.transactions.get`, and the server adapters call `sdk.paymentRequests.settle`. The peer range pins to `^0.2.0-alpha.0`, so any `0.2.0-alpha.*` of `@blockchain0x/node` works (plus the eventual `0.2.0` stable release).
 
 ## Pay-side: drop-in fetch wrapper
 
