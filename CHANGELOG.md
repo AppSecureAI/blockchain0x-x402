@@ -1,5 +1,9 @@
 # @blockchain0x/x402 changelog
 
+## [0.1.0-alpha.1] - 2026-05-29
+
+minor update
+
 ## 0.1.0-alpha.0
 
 First publish (sub-plan 21.2 rows B-1..B-5).
@@ -12,3 +16,5 @@ Adds:
 - Express middleware: `createX402Middleware` ditto for Express (`@blockchain0x/x402/server/express`).
 
 Peer dependency: `@blockchain0x/node@^0.2.0`.
+
+[0.1.0-alpha.1]: https://github.com/Tosh-Labs/blockchain0x-x402/releases/tag/v0.1.0-alpha.1
