@@ -1,0 +1,54 @@
+name: CodeQL Triage and Fix
+
+permissions:
+  contents: read
+  id-token: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  codeql-scan-and-process:
+    runs-on: ubuntu-latest
+    env:
+      PROCESSING_MODE: group_cc
+      AUTO_CREATE_PRS: "true"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-extended,security-and-quality
+
+      - name: Run CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          upload: false
+          output: codeql-results
+
+      - name: Prepare CodeQL SARIF
+        run: |
+          find codeql-results -name "*.sarif" -print
+          first_sarif="$(find codeql-results -name "*.sarif" -print -quit)"
+          if [ -z "$first_sarif" ]; then
+            echo "No CodeQL SARIF file produced" >&2
+            exit 1
+          fi
+          cp "$first_sarif" codeql-results.sarif
+
+      - name: Upload CodeQL SARIF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif
+          path: codeql-results.sarif
+          retention-days: 7
+
+      - name: AppSecAI Triage and Fix
+        uses: AppSecureAI/automation-action@v1
+        with:
+          file: codeql-results.sarif

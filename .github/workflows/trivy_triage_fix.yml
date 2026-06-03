@@ -1,0 +1,47 @@
+name: Trivy Triage and Fix
+
+permissions:
+  contents: read
+  id-token: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trivy-scan-and-process:
+    runs-on: ubuntu-latest
+    env:
+      PROCESSING_MODE: group_cc
+      AUTO_CREATE_PRS: "true"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate npm lockfile
+        run: |
+          npm install --package-lock-only --ignore-scripts
+
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,misconfig
+          format: json
+          output: trivy-results.json
+          exit-code: "0"
+          ignore-unfixed: false
+
+      - name: Upload Trivy JSON as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-json
+          path: trivy-results.json
+          retention-days: 7
+
+      - name: AppSecAI Triage and Fix
+        uses: AppSecureAI/automation-action@v1
+        with:
+          file: trivy-results.json
