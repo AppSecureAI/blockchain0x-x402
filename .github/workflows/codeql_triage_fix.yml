@@ -15,18 +15,18 @@ jobs:
       AUTO_CREATE_PRS: "true"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@9f759ee644a3e7c15c1390abf49868036c00067b # v3
         with:
           languages: javascript-typescript
           queries: security-extended,security-and-quality
 
       - name: Run CodeQL analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@9f759ee644a3e7c15c1390abf49868036c00067b # v3
         with:
           upload: false
           output: codeql-results
@@ -42,13 +42,13 @@ jobs:
           cp "$first_sarif" codeql-results.sarif
 
       - name: Upload CodeQL SARIF as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: codeql-sarif
           path: codeql-results.sarif
           retention-days: 7
 
       - name: AppSecAI Triage and Fix
-        uses: AppSecureAI/automation-action@v1
+        uses: AppSecureAI/automation-action@7775a36e9f346fa83c7234a6c95d88c2960b1227 # v1
         with:
           file: codeql-results.sarif
